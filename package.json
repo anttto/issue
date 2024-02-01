@@ -1,0 +1,24 @@
+{
+    "name": "nuxt-app",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "dotenv -e .env.live nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare"
+    },
+    "devDependencies": {
+        "dotenv-cli": "^7.3.0",
+        "nuxt": "^3.10.0",
+        "vue": "^3.4.15",
+        "vue-router": "^4.2.5"
+    },
+    "dependencies": {
+        "cross-env": "^7.0.3",
+        "dotenv": "^16.4.1",
+        "sass": "^1.70.0",
+        "sass-loader": "^14.1.0"
+    }
+}
