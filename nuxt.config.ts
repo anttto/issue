@@ -1,4 +1,5 @@
 export default defineNuxtConfig({
     devtools: { enabled: false },
-    css: [process.env.ASSET_PATH],
+    css: ['~/public/assets/scss/base.scss'],
+    // css: [process.env.ASSET_PATH],
 });

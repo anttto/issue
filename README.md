@@ -1,75 +1,33 @@
-# Nuxt 3 Minimal Starter
+# Nuxt3 : public/assets/.. 이슈
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## 현재 처리 상황
 
-## Setup
+현재는 scss(css)가 소스 안에 위치 하여 빌드시에 함께 번들링되는 구조이고,
+image 들은 /public/ 이라는 폴더안에 넣고 개발을 합니다. public폴더는 빌드시에 그대로 옮겨지기 때문에 경량화 및 번들링이 함께 되지 않는 단점이 있습니다. 하지만 잦는 이미지 수정이나 해외서비스의 용량 & 속도 이슈로 s3나 cdn 처리를 하기를 원했기에 배포시에 이미지만 해당 경로로 변경이 필요했습니다.
+그렇게 되면 css 는 소스안에서 번들링되어 최적화 및 동작에 문제가 없고 이미지 경로만 분기하면 되는 상황이였습니다.
 
-Make sure to install the dependencies:
+그 scss 안의 images 경로만 환경 변수의 분기로 '개발'과 '배포'시에 각각 다른 경로를 바라보게 처리되어 있습니다.
 
-```bash
-# npm
-npm install
+<br>
+<br>
 
-# pnpm
-pnpm install
+## public 안에 assets 폴더를 전부 넣을 경우 (후에 어디에 올리든 함께있으면 css와 images간의 경로가 동일하지 않나요?)
 
-# yarn
-yarn install
+1. nuxt.config 에 scss의 최종 경로를 입력해야 에러 없이 실행 됨
+2. 하지만 nuxt(Fe 프레임워크 등)의 현대적 지향점과 맞지 않는 이유로 모든 scss의 Warning 발생함 (scss, image 등은 번들링과 패킹으로 최적화 소스를 지향하기 때문에 assets 폴더를 생성 후 넣는것을 권장함)
 
-# bun
-bun install
-```
+3. 만약 그 정도의 warning 은 무시하고 나중에 css와 image 의 경로를 잡기 쉬우니 그냥 이대로 가자 라고 판단 했다고 가정했다 치자.
+4. 마지막 관문은, 현 시점은 css와 웹앱 소스의 연결이 루트 경로라는 점.
 
-## Development Server
+5. 이것을 해결하기 위해 nuxt.config 안의 css 경로 부분을 환경 변수로 지정하고
+6. package.json 의 script 실행 단에서 dev 와 build 시에 환경 변수를 분기해서 처리하자고 생각해보자.
+7. s3 도메인을 live 환경 변수에 입력하고 build를 돌려보면 빌드 시점에 에러가 발생함.
+8. 서칭 결과 빌드 엔트리 포인트 시점에 외부 url 을 사용하는것이 허용이 되지 않는다고 함.
+9. 엔트리 모듈은 빌드 시 포함되어 번들에 추가되어야 하는 로컬 파일이나 모듈이어야 한다고 함.
 
-Start the development server on `http://localhost:3000`:
+10. 결국 public 에 css 까지 넣어서 이미지 경로를 간단하게 붙이려는 과정은 빌드시에 문제가 발생함. (css명, image명 변화)
+11. 예상하기로 리액트 진영 프레임워크나 라이브러리도 마찬가지일듯.
 
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+추가
+현재 저희가 처리하려는 이런 사항들도 사업 환경상 필요하지만 일반적이지 않은 예외 적인 처리임은 분명합니다.
+후에 더 좋은 방안들이 나오거나 발견하면 서로 공유하고 개선하면 좋을것 같습니다.
